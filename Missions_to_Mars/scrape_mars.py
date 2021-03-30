@@ -58,7 +58,7 @@ def scrape_info():
         "news_p": news_p,
         "featured_image_url": featured_image_url,
         "facts_table": facts_table,
-        "hemisphere_image_urls": hemisphere_image_urls
+        "hemispheres_image_urls": hemispheres_image_urls
     }
 
     # Close the browser after scraping
