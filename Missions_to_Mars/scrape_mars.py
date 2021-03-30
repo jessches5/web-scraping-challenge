@@ -1,46 +1,68 @@
-from splinter import Browser
 from bs4 import BeautifulSoup as bs
-import time
+import requests
+import pandas as pandas
+
+from splinter import Browser
+from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
 
 def scrape_info():
     # Set up Splinter
     executable_path = {'executable_path': ChromeDriverManager().install()}
-    browser = Browser('chrome', **executable_path, headless=False)
+    browser = Browser('chrome', **executable_path, headless=True)
 
-    # Visit visitcostarica.herokuapp.com
-    url = "https://visitcostarica.herokuapp.com/"
+    # Visit mars.nasa.gov/news
+    url = "https://mars.nasa.gov/news/"
+    # Retrieve page with the requests module
+    response = requests.get(url)
+    # Create BeautifulSoup object; parse with 'html.parser'
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    news_title = soup.find("div", class_="content_title").text.strip()
+    news_p = soup.find("div", class_="rollover_description_inner").text.strip()
+    urlb = img_soup.find('img', class_="headerimage")['src']
+    url = "https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html"
     browser.visit(url)
-
-    time.sleep(1)
-
-    # Scrape page into Soup
     html = browser.html
-    soup = bs(html, "html.parser")
+    img_soup = BeautifulSoup(html, 'html.parser')
+    featured_image_url = f"https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/{urlb}"
+    
+    url = "https://space-facts.com/mars/"
+    facts_table = pd.read_html(url)[0].to_html()
 
-    # Get the average temps
-    avg_temps = soup.find('div', id='weather')
+    url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
+    browser.visit(url)
+    html = browser.html
+    hemi_soup = BeautifulSoup(html, 'html.parser')
+    banners_tag = hemi_soup.find_all('h3')
+    banners = [x.text for x in banners_tag]
 
-    # Get the min avg temp
-    min_temp = avg_temps.find_all('strong')[0].text
+    hemispheres_image_urls = []
 
-    # Get the max avg temp
-    max_temp = avg_temps.find_all('strong')[1].text
+    for i in range(len(banners)):
+        hemisphere = {}
+        browser.visit(url)
+        browser.find_by_css('h3')[i].click()
+        hemisphere['title'] = banners[i]
+        hemisphere['img_url'] = browser.find_by_text('Sample')['href']
+        
+        hemispheres_image_urls.append(hemisphere)
+        
+        browser.back()
 
-    # BONUS: Find the src for the sloth image
-    relative_image_path = soup.find_all('img')[2]["src"]
-    sloth_img = url + relative_image_path
-
+    
     # Store data in a dictionary
-    costa_data = {
-        "sloth_img": sloth_img,
-        "min_temp": min_temp,
-        "max_temp": max_temp
+    mars_data = {
+        "news_title": news_title,
+        "news_p": news_p,
+        "featured_image_url": featured)image_url,
+        "facts_table": facts_table,
+        "hemisphere_image_urls": hemisphere_image_urls
     }
 
     # Close the browser after scraping
     browser.quit()
 
     # Return results
-    return costa_data
+    return mars_data
