@@ -1,6 +1,6 @@
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup
 import requests
-import pandas as pandas
+import pandas as pd
 
 from splinter import Browser
 from selenium import webdriver
@@ -21,11 +21,11 @@ def scrape_info():
 
     news_title = soup.find("div", class_="content_title").text.strip()
     news_p = soup.find("div", class_="rollover_description_inner").text.strip()
-    urlb = img_soup.find('img', class_="headerimage")['src']
     url = "https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html"
     browser.visit(url)
     html = browser.html
     img_soup = BeautifulSoup(html, 'html.parser')
+    urlb = img_soup.find('img', class_="headerimage")['src']
     featured_image_url = f"https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/{urlb}"
     
     url = "https://space-facts.com/mars/"
@@ -56,7 +56,7 @@ def scrape_info():
     mars_data = {
         "news_title": news_title,
         "news_p": news_p,
-        "featured_image_url": featured)image_url,
+        "featured_image_url": featured_image_url,
         "facts_table": facts_table,
         "hemisphere_image_urls": hemisphere_image_urls
     }
