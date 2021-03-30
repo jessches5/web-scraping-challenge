@@ -32,7 +32,7 @@
   
 
   <div class="col-md-4">
-    {{ mars_data.fact_table | safe }}
+    {{ mars_data.facts_table | safe }}
   </div>
 </div>
 
@@ -41,7 +41,7 @@
   <div class="col-md-3">
     <h3>{{ hemi.title }}</h3>
 
-    <img src="{{ hemi.img_url }}" alt="Hemispheres">
+    <img src="{{ hemi.img_url }}" alt="Hemispheres" width="400">
   </div>
   </div>
   {% endfor %}
